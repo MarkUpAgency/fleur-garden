@@ -3,7 +3,13 @@ import createNextIntlPlugin from "next-intl/plugin";
 
 const nextConfig: NextConfig = {
   images: {
-    domains: ['admin.fleurgarden.com'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'admin.fleurgarden.com',
+        pathname: '/**',
+      },
+    ],
   },
 };
 
