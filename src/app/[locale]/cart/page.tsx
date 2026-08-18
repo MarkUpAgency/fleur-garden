@@ -14,6 +14,7 @@ import { Link } from '@/i18n/navigation'
 import { useTranslations } from 'next-intl'
 import { LocalStorageCartItem, CartItemData, CartStorageItemV2, ApplyPromoPayload, PromoCodeResponse } from '@/types'
 import { applyPromoMutation } from '@/services/products/mutations'
+import { getProductImage, normalizeImageUrl } from '@/lib/utils'
 
 function formatCurrency(amount: number | string) {
     const numAmount = typeof amount === 'string' ? parseFloat(amount.replace(/[^\d.-]/g, '')) : amount
@@ -36,7 +37,7 @@ function transformLocalStorageData(localStorageData: LocalStorageCartItem[]): Ca
             : item.product.price,
         qty: item.qty,
         selected: true,
-        image: item.product.image || "",
+        image: normalizeImageUrl(item.product.image) ?? "",
         type: item.product.type,
     }))
 }
@@ -50,7 +51,8 @@ function transformV2Data(v2: CartStorageItemV2[]): CartItemData[] {
         price: item.price,
         qty: item.quantity,
         selected: true,
-        image: item.image || "",
+        // Fall back to the product's category image for items stored without one.
+        image: normalizeImageUrl(item.image) ?? getProductImage(item.product) ?? "",
         type: item.pricingMode || 'unified',
     }))
 }

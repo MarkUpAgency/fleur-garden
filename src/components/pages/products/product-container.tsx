@@ -7,6 +7,7 @@ import Image from "next/image"
 import ShareDialog from "@/components/shared/share-dialog"
 import { useTranslations } from "next-intl"
 import { Product } from "@/types"
+import { getProductImage } from "@/lib/utils"
 import { toast } from "sonner"
 import { Input } from "@/components/ui/input"
 
@@ -18,6 +19,7 @@ function ProductContainer({ product }: { product: Product }) {
     const [isInComparison, setIsInComparison] = useState(false)
 
     const t = useTranslations("product_page")
+    const productImage = getProductImage(product)
 
     const selectedSizePrice = useMemo(() => {
         const v = Number(customSize)
@@ -184,7 +186,7 @@ function ProductContainer({ product }: { product: Product }) {
                     price: priceValue,
                     qty: hasUnifiedPrice ? 1 : quantity,
                     selected: true,
-                    image: product.image || '',
+                    image: productImage ?? '',
                     type: hasUnifiedPrice ? 'unified' : 'priced'
                 })
             }
@@ -214,11 +216,11 @@ function ProductContainer({ product }: { product: Product }) {
             <div className="relative w-full lg:w-[calc(45%-16px)]">
                 <div className="border border-[#D3D3D7] h-[520px] rounded-[12px] p-8 bg-white">
                     <div className="relative aspect-square h-full w-full">
-                        {product.image && product.image !== null && product.image !== 'null' ? (
+                        {productImage ? (
                             <Image
                                 width={1000}
                                 height={1000}
-                                src={product.image}
+                                src={productImage}
                                 alt={product.name}
                                 className="w-full h-full object-contain"
                             />

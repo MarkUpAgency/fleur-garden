@@ -58,10 +58,14 @@ export interface Product {
     code: string,
     price: number | null,
     stock: number,
-    image: string,
-    thumb_image: string,
+    image: string | null,
+    thumb_image: string | null,
     category_name: string,
     category_slug: string,
+    // Image of the category this product belongs to. The API sends it inline so
+    // products without their own image can fall back to it. See getProductImage().
+    category_image: string | null,
+    category_thumb_image: string | null,
     brand_name: string,
     brand_slug: string,
     star: number,
@@ -122,15 +126,21 @@ export interface Brand {
     slug: string
 }
 
+export interface SubCategory {
+    id: number
+    name: string
+    slug: string
+    image: string | null
+    thumb_image: string | null
+}
+
 export interface Category {
     id: number
     name: string
     slug: string
-    category: {
-        id: number
-        name: string
-        slug: string
-    }[]
+    image: string | null
+    thumb_image: string | null
+    category: SubCategory[]
 }
 
 export interface FilterProductsPayload {
@@ -158,7 +168,24 @@ export interface OrderPayload {
     }[]
 }
 
+export interface OrderDetailItem {
+    // The API sends the product as a plain name string, not an object.
+    product: string
+    quantity: string
+    size: number
+    price: number
+    total_price: number
+    // Only present if the backend enriches order lines with product data.
+    // Absent on the list endpoint, so treat as optional everywhere.
+    image?: string | null
+    thumb_image?: string | null
+    category_image?: string | null
+    category_thumb_image?: string | null
+    slug?: string | null
+}
+
 export interface Order {
+    id?: number
     address: string
     city: string
     note: string
@@ -167,13 +194,14 @@ export interface Order {
     total_price: number
     promocode: string
     payment_type: number
-    details: {
-        product: string
-        quantity: string
-        size: number
-        price: number
-        total_price: number
-    }[]
+    // Optional metadata the detail endpoint may return on top of the list shape.
+    order_number?: string | null
+    created_at?: string | null
+    name?: string | null
+    phone?: string | null
+    discount?: number | null
+    delivery_price?: number | null
+    details: OrderDetailItem[]
 }
 
 

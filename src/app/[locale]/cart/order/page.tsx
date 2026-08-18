@@ -13,11 +13,12 @@ import { useTranslations } from 'next-intl'
 import PhoneInput from 'react-phone-input-2'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { orderMutation } from '@/services/products/mutations'
-import type { OrderPayload } from '@/types'
+import type { OrderPayload, Product } from '@/types'
 import { useRouter } from '@/i18n/navigation'
 import { toast } from 'sonner'
 import Cookies from 'js-cookie'
 import { getUserQuery } from '@/services/auth/queries'
+import { getProductImage, normalizeImageUrl } from '@/lib/utils'
 
 interface CheckoutItem {
     id: string
@@ -126,7 +127,7 @@ function Order() {
                 price: number
                 quantity: number
                 size: number | null
-                product?: { brand_name?: string }
+                product?: Product
             }>).map((it) => ({
                 id: `${it.id}-${it.size ?? 'na'}`,
                 title: it.name,
@@ -134,7 +135,8 @@ function Order() {
                 volume: it.size ? `${it.size} Gr` : '',
                 price: Number(it.price),
                 qty: Number(it.quantity),
-                image: it.image || '',
+                // Fall back to the product's category image when the item has none.
+                image: normalizeImageUrl(it.image) ?? getProductImage(it.product) ?? '',
             }))
         }
         // Very old format
@@ -147,7 +149,7 @@ function Order() {
                     volume: '',
                     price: typeof it.product.price === 'string' ? parseFloat(it.product.price.replace(/[^\d.-]/g, '')) : Number(it.product.price ?? 0),
                     qty: Number(it.qty),
-                    image: it.product.image || '',
+                    image: normalizeImageUrl(it.product.image) ?? '',
                 }))
         }
         // Assume CheckoutItem[]

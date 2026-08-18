@@ -8,6 +8,8 @@ import { getServerQueryClient } from "@/providers/server"
 import { getOrdersQuery } from "@/services/products/queries"
 import { cookies } from "next/headers"
 import { Order as ApiOrder } from "@/types"
+import { normalizeOrder } from "@/services/products/normalize"
+import { Link } from "@/i18n/navigation"
 
 export async function StatusBadge({ status }: { status: number }) {
     const t = await getTranslations("order")
@@ -80,7 +82,13 @@ async function OrderCard({ order }: { order: ApiOrder }) {
 
                 <div className="flex flex-col gap-4">
                     <StatusBadge status={order.order_status} />
-                    <Button disabled variant="secondary" className="bg-black hover:bg-black/80 text-white">{t("order_details")}</Button>
+                    {order.id ? (
+                        <Button asChild variant="secondary" className="bg-black hover:bg-black/80 text-white">
+                            <Link href={`/profile/orders/${order.id}`}>{t("order_details")}</Link>
+                        </Button>
+                    ) : (
+                        <Button disabled variant="secondary" className="bg-black hover:bg-black/80 text-white">{t("order_details")}</Button>
+                    )}
                 </div>
             </div>
         </div >
@@ -94,7 +102,7 @@ export default async function OrdersList() {
     const ordersData = queryClient.getQueryData(getOrdersQuery(token).queryKey);
 
     const rawOrders = (ordersData as { data?: unknown })?.data as unknown[] | undefined
-    const orders: ApiOrder[] | undefined = rawOrders?.map((o) => normalizeOrder(o as UnknownRecord))
+    const orders: ApiOrder[] | undefined = rawOrders?.map((o) => normalizeOrder(o))
 
     const t = await getTranslations("order")
 
@@ -131,31 +139,3 @@ export default async function OrdersList() {
     )
 }
 
-interface UnknownRecord {
-    [key: string]: unknown
-}
-
-function normalizeOrder(o: UnknownRecord): ApiOrder {
-    return {
-        address: (o?.address as string | null) ?? "",
-        city: (o?.city as string | null) ?? "",
-        note: (o?.note as string | null) ?? "",
-        order_status: Number((o?.order_status as number | string | undefined) ?? (o?.["order-status"] as number | string | undefined) ?? 0),
-        payment_status: (o?.payment_status as string | null) ?? (o?.["payment-status"] as string | null) ?? "",
-        total_price: Number((o?.total_price as number | string | undefined) ?? 0),
-        promocode: (o?.promocode as string | null) ?? "",
-        payment_type: Number((o?.payment_type as number | string | undefined) ?? 0),
-        details: Array.isArray(o?.details)
-            ? (o.details as unknown[]).map((d) => {
-                const r = d as UnknownRecord
-                return {
-                    product: String((r?.product as string | undefined) ?? ""),
-                    quantity: String((r?.quantity as string | number | undefined) ?? "0"),
-                    size: Number((r?.size as number | string | undefined) ?? 0),
-                    price: Number((r?.price as number | string | undefined) ?? 0),
-                    total_price: Number((r?.total_price as number | string | undefined) ?? 0),
-                }
-            })
-            : [],
-    }
-}

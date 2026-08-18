@@ -87,6 +87,15 @@ const getOrders = async (token: string) => {
   return response;
 };
 
+const getOrder = async (id: string, token: string) => {
+  const response = await get<ApiResponse<Order>>(`order/${id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response;
+};
+
 const applyPromo = async (data: ApplyPromoPayload) => {
   const response = await post<PromoCodeResponse>(`order/apply-promocode`, data);
   return response;
@@ -104,5 +113,6 @@ export {
   filterProducts,
   order,
   getOrders,
+  getOrder,
   applyPromo,
 };

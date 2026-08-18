@@ -4,6 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import Image from 'next/image'
 import { ArrowRight } from 'lucide-react'
 import { Product } from '@/types'
+import { getProductImage } from '@/lib/utils'
 import { Input } from '@/components/ui/input'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
@@ -24,6 +25,7 @@ function CartButton({ product }: { product: Product }) {
     const t = useTranslations("product_card")
     const hasUnifiedPrice = product.price !== null && product.price !== undefined
     const router = useRouter()
+    const productImage = getProductImage(product)
 
     const selectedPriceTier = React.useMemo(() => {
         if (hasUnifiedPrice || !product.price_by_size || !Array.isArray(product.price_by_size) || product.price_by_size.length === 0) {
@@ -161,7 +163,7 @@ function CartButton({ product }: { product: Product }) {
                     qty: hasUnifiedPrice ? 1 : 1,
                     type: hasUnifiedPrice ? 'unified' : 'priced',
                     selected: true,
-                    image: product.image || ''
+                    image: productImage ?? ''
                 })
             }
 
@@ -202,8 +204,8 @@ function CartButton({ product }: { product: Product }) {
 
                         <div className="mt-4 grid grid-cols-[72px_1fr_auto] gap-4 items-center">
                             <div className="w-18 h-18 bg-white py-3 rounded-md border flex items-center justify-center overflow-hidden">
-                                {product.image && product.image !== null && product.image !== 'null' ? (
-                                    <Image src={product.image} alt={product.name} width={100} height={100} />
+                                {productImage ? (
+                                    <Image src={productImage} alt={product.name} width={100} height={100} />
                                 ) : (
                                     <div className="w-full h-full bg-[#F2F4F8] flex items-center justify-center">
                                         <span className="text-[#77777B] text-sm">No Image</span>

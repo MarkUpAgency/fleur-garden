@@ -14,6 +14,7 @@ import Image from 'next/image'
 import { Link } from '@/i18n/navigation'
 import { ArrowRight, Star } from 'lucide-react'
 import { Product } from '@/types'
+import { getProductImage } from '@/lib/utils'
 
 
 function FavComp({ product }: { product: Product }) {
@@ -21,6 +22,7 @@ function FavComp({ product }: { product: Product }) {
     const [isFavorite, setIsFavorite] = React.useState(false)
 
     const t = useTranslations("product_card")
+    const productImage = getProductImage(product)
 
     React.useEffect(() => {
         if (typeof window !== 'undefined') {
@@ -41,7 +43,7 @@ function FavComp({ product }: { product: Product }) {
 
             const existingIndex = comparison.findIndex(item => item.id === product.id)
             if (existingIndex === -1) {
-                comparison.push({ id: product.id, product, image: product.image })
+                comparison.push({ id: product.id, product, image: productImage ?? '' })
                 window.localStorage.setItem(storageKey, JSON.stringify(comparison))
                 setIsComparisonOpen(true)
                 toast.success(t("add_to_compare_dialog"))
@@ -74,7 +76,7 @@ function FavComp({ product }: { product: Product }) {
                 toast.success(t("remove_from_wishlist_dialog"))
             } else {
                 // Add to favorites
-                favorites.push({ id: product.id, product, image: product.image })
+                favorites.push({ id: product.id, product, image: productImage ?? '' })
                 setIsFavorite(true)
                 toast.success(t("add_to_wishlist_dialog"))
             }
@@ -116,7 +118,7 @@ function FavComp({ product }: { product: Product }) {
                                 <Image
                                     width={64}
                                     height={64}
-                                    src={product.image || '/placeholder.svg'}
+                                    src={productImage ?? '/placeholder.svg'}
                                     alt={product.name}
                                     className="w-full h-full object-contain"
                                 />

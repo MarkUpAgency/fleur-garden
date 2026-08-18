@@ -5,6 +5,7 @@ import { useRouter } from '@/i18n/navigation'
 import Image from 'next/image'
 import React, { useMemo } from 'react'
 import { ProductCardProps } from '@/types'
+import { getProductImage } from '@/lib/utils'
 import { useTranslations } from 'next-intl'
 import FavComp from '../products/favComp'
 import CartButton from '../products/cartButton'
@@ -14,6 +15,7 @@ function ProductCard({ product }: ProductCardProps) {
     const hasUnifiedPrice = product.price !== null && product.price !== undefined
     const hasPriceBySizeStructure = product.price_by_size && Array.isArray(product.price_by_size) && product.price_by_size.length > 0
     const t = useTranslations("product_card")
+    const imageSrc = getProductImage(product)
 
     // Get the display price - either unified price or first price tier
     const displayPrice = useMemo(() => {
@@ -34,14 +36,16 @@ function ProductCard({ product }: ProductCardProps) {
         >
             <FavComp product={product} />
             {/* Product Image */}
-            <div className="aspect-[2/2] mb-4 rounded-lg overflow-hidden">
-                {product.image && product.image !== null && product.image !== 'null' ? (
+            <div className="relative aspect-[2/2] mb-4 rounded-lg overflow-hidden">
+                {imageSrc ? (
                     <Image
-                        src={product.image}
+                        src={imageSrc}
                         alt={product.name}
-                        width={100}
-                        height={100}
-                        className="w-full h-full object-cover"
+                        fill
+                        // The card sits in a 2-col grid on mobile and a 3/4-col
+                        // grid from lg up, so the slot width is viewport-relative.
+                        sizes="(max-width: 1024px) 50vw, 33vw"
+                        className="object-cover"
                     />
                 ) : (
                     <div className="w-full h-full bg-[#F2F4F8] rounded-lg flex items-center justify-center">

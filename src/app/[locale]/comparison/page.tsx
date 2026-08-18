@@ -4,6 +4,7 @@ import Container from '@/components/shared/container'
 import Image from 'next/image'
 import React from 'react'
 import { Product } from '@/types'
+import { getProductImage } from '@/lib/utils'
 import { useTranslations } from 'next-intl'
 
 interface ComparisonItem {
@@ -91,13 +92,19 @@ function ComparisonPage() {
                                     {items.map((x) => (
                                         <th key={`image-${x.id}`} className="w-48 px-6 py-6 border-y border-gray-200">
                                             <div className="mx-auto h-28 w-20 relative">
-                                                <Image
-                                                    src={x.product.image}
-                                                    alt={x.product.brand_name}
-                                                    fill
-                                                    sizes="80px"
-                                                    className="object-contain"
-                                                />
+                                                {getProductImage(x.product) ? (
+                                                    <Image
+                                                        src={getProductImage(x.product) as string}
+                                                        alt={x.product.brand_name}
+                                                        fill
+                                                        sizes="80px"
+                                                        className="object-contain"
+                                                    />
+                                                ) : (
+                                                    <div className="w-full h-full bg-[#F2F4F8] rounded-md flex items-center justify-center">
+                                                        <span className="text-[#77777B] text-xs">No Image</span>
+                                                    </div>
+                                                )}
                                             </div>
                                         </th>
                                     ))}

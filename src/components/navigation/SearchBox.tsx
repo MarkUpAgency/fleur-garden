@@ -8,6 +8,7 @@ import { History, Search, Star, X } from "lucide-react"
 import { Popover, PopoverContent, PopoverAnchor } from "@/components/ui/popover"
 import { useTranslations } from "next-intl"
 import Image from "next/image"
+import { getProductImage } from "@/lib/utils"
 
 interface SearchBoxProps {
   initialQuery?: string
@@ -199,7 +200,9 @@ export function SearchBox({ initialQuery = "", className, latestProducts = [] }:
                   <p className="text-base font-semibold">{t("title")}</p>
                 </div>
                 <div className="flex gap-4 overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-                  {latestProducts.map((p) => (
+                  {latestProducts.map((p) => {
+                    const imageSrc = getProductImage(p, { preferThumb: true })
+                    return (
                     <button
                       key={p.id}
                       type="button"
@@ -210,8 +213,8 @@ export function SearchBox({ initialQuery = "", className, latestProducts = [] }:
                       className="min-w-[280px] flex items-center gap-4 rounded-2xl border px-4 py-3 hover:bg-muted/50"
                     >
                       {
-                        p.image && p.image !== null && p.image !== 'null' ? (
-                          <Image width={56} height={90} src={p.thumb_image || p.image} alt={p.name} className="w-[64px] h-[90px] object-cover rounded-xl bg-white" />
+                        imageSrc ? (
+                          <Image width={64} height={90} sizes="64px" src={imageSrc} alt={p.name} className="w-[64px] h-[90px] object-cover rounded-xl bg-white" />
                         ) : (
                           <div className="w-full h-full bg-[#F2F4F8] rounded-md">
                             <span className="text-[#77777B] text-xs">No Image</span>
@@ -232,7 +235,8 @@ export function SearchBox({ initialQuery = "", className, latestProducts = [] }:
                         <p className="text-foreground font-semibold mt-1 text-sm">{p.price} USD</p>
                       </div>
                     </button>
-                  ))}
+                    )
+                  })}
                 </div>
               </>
             )}
