@@ -33,6 +33,8 @@ Every domain under `src/services/<domain>/` follows the same split, and new doma
 - `queries.ts` — `queryOptions(...)` / `infiniteQueryOptions(...)` factories. These are shared verbatim between server prefetch and client `useQuery`, which is what keeps query keys in sync. Never inline a query key at a call site.
 - `mutations.ts` — `mutationOptions(...)` factories, or full `useMutation` hooks when they need router/toast/invalidation side effects (see `src/services/auth/mutations.ts`).
 
+Existing domains: `about`, `auth`, `blogs`, `home`, `products` (not every domain has all three files — only add `mutations.ts` when there are writes). **Orders live under `services/products/`**, not their own domain. `products/normalize.ts` is an extra, domain-local layer: the orders/order-detail endpoints return loosely-typed payloads, so its `str`/`num`/`optionalStr` coercers map raw records onto `Order`/`OrderDetailItem` before anything renders — extend it rather than defensively coercing at call sites.
+
 `src/lib/api/client.ts` is a single axios instance with interceptors that attach the `access_token` cookie as a Bearer header and derive `Accept-Language` from the locale (explicit `config.params.locale` / `X-Locale` header wins; otherwise it parses the locale off the URL path). Because token reading uses `js-cookie`, **the axios client is browser-oriented** — server-side calls that need auth pass the token explicitly as a header (`getUser(token)`, `getOrders(token)`).
 
 ### Server prefetch → client hydration
@@ -86,4 +88,5 @@ Use it at **both** render sites and localStorage write sites — cart/favorites/
 - Services export named functions at the bottom of the file (`export { a, b, c }`) rather than inline `export const`.
 - Toasts use `sonner`; several user-facing strings in mutation handlers are **hardcoded Azerbaijani** rather than translated — follow the surrounding file, and prefer translation keys for new user-facing text.
 - Forms use react-hook-form + zod via `@hookform/resolvers` and the shadcn `form` wrapper.
+- Hardcoded static data (non-API content) lives in `src/utils/static.ts`.
 - Filter payloads are pruned before sending (`filterProducts` in `services/products/api.ts` drops zero/sentinel values, e.g. `max_price` is only sent below the hardcoded `5600` ceiling).

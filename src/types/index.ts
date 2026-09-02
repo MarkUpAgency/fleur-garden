@@ -60,6 +60,9 @@ export interface Product {
     stock: number,
     image: string | null,
     thumb_image: string | null,
+    // Absolute URL imported from excel (`image_url` column). Used when the
+    // product has no uploaded image of its own. See getProductImage().
+    image_url?: string | null,
     category_name: string,
     category_slug: string,
     // Image of the category this product belongs to. The API sends it inline so
@@ -179,6 +182,7 @@ export interface OrderDetailItem {
     // Absent on the list endpoint, so treat as optional everywhere.
     image?: string | null
     thumb_image?: string | null
+    image_url?: string | null
     category_image?: string | null
     category_thumb_image?: string | null
     slug?: string | null

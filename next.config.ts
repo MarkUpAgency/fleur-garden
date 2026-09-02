@@ -9,6 +9,17 @@ const nextConfig: NextConfig = {
         hostname: 'admin.fleurgarden.com',
         pathname: '/**',
       },
+      // Absolute URLs coming from the excel import `image_url` column.
+      {
+        protocol: 'https',
+        hostname: 'fleurgarden.ru',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'www.fleurgarden.ru',
+        pathname: '/**',
+      },
     ],
   },
 };

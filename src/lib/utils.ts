@@ -21,6 +21,7 @@ export function normalizeImageUrl(value?: string | null): string | null {
 export interface ProductImageSource {
   image?: string | null
   thumb_image?: string | null
+  image_url?: string | null
   category_image?: string | null
   category_thumb_image?: string | null
 }
@@ -29,6 +30,9 @@ export interface ProductImageSource {
  * Resolves which image to show for a product. A product without its own image
  * falls back to the image of the category it belongs to, which the API sends
  * inline on every product as `category_image` / `category_thumb_image`.
+ *
+ * `image_url` sits between the two: it is an absolute URL imported from the
+ * excel feed and is only used when the product has no uploaded image.
  *
  * Returns null when neither the product nor its category has an image, so the
  * caller can render its own "No Image" placeholder.
@@ -47,7 +51,7 @@ export function getProductImage(
     ? [source.category_thumb_image, source.category_image]
     : [source.category_image, source.category_thumb_image]
 
-  for (const candidate of [...own, ...category]) {
+  for (const candidate of [...own, source.image_url, ...category]) {
     const normalized = normalizeImageUrl(candidate)
     if (normalized) return normalized
   }

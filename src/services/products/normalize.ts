@@ -54,6 +54,7 @@ function normalizeOrderDetail(raw: unknown): OrderDetailItem {
         total_price: num(r.total_price, r.subtotal, nested.total_price),
         image: optionalStr(r.image, nested.image),
         thumb_image: optionalStr(r.thumb_image, nested.thumb_image),
+        image_url: optionalStr(r.image_url, nested.image_url),
         category_image: optionalStr(r.category_image, nested.category_image),
         category_thumb_image: optionalStr(r.category_thumb_image, nested.category_thumb_image),
         slug: optionalStr(r.slug, r.product_slug, nested.slug),
