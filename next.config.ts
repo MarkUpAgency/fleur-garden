@@ -12,6 +12,11 @@ const nextConfig: NextConfig = {
       // Absolute URLs coming from the excel import `image_url` column.
       {
         protocol: 'https',
+        hostname: 'firebasestorage.googleapis.com',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
         hostname: 'fleurgarden.ru',
         pathname: '/**',
       },
